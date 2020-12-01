@@ -1,0 +1,31 @@
+name: Main CI
+on:
+  push:
+    branches:
+    — master
+  pull_request:
+    branches:
+    — master
+jobs:
+  # The “build” workflow
+  build:
+  runs-on: macos-10.15
+  steps:
+    — uses: actions/checkout@v2
+    - name: Setup Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: ‘1.15.3’
+    - name: Install dependencies
+      run: |
+        go version
+        go get golang.org/x/lint/golint
+        go honnef.co/go/tools/cmd/staticcheck
+        go get -d ./...
+    - name: Build and test
+      run: |
+        go build -tags=gofuzz ./...
+        go vet ./...
+        staticcheck ./...
+        golint -set_exit_status ./...
+        go test -v -race ./...
