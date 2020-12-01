@@ -7,7 +7,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest]
+        os: [ubuntu-latest]
     steps:
       - uses: actions/checkout@v2
       - name: Setup Go
@@ -18,7 +18,7 @@ jobs:
         run: |
           go version
           go get golang.org/x/lint/golint
-          go honnef.co/go/tools/cmd/staticcheck
+          go get honnef.co/go/tools/cmd/staticcheck
           go get -d ./...
       - name: Build and test
         run: |
