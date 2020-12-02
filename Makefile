@@ -1,0 +1,19 @@
+install-deps:
+	go version
+	go get golang.org/x/lint/golint
+	go get honnef.co/go/tools/cmd/staticcheck
+	go get -d ./...
+build-and-test:
+	go build -tags=gofuzz ./...
+	go vet ./...
+	staticcheck ./...
+	golint -set_exit_status ./...
+	go test -v -race ./...
+ci:
+	echo "Installing dependencies"
+	make install-deps
+	echo "Building and testing"
+	make build-and-test
+	# Because install-deps modifies go.mod, restore it.
+	git restore go.mod
+	rm go.sum

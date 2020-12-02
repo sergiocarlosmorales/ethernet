@@ -1,29 +1,21 @@
 name: Main CI
 on: [push, pull_request]
 jobs:
-  # The “build” workflow
   build:
     name: Build
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest]
+        os: [ubuntu-latest, macos-11.0]
     steps:
       - uses: actions/checkout@v2
       - name: Setup Go
         uses: actions/setup-go@v2
         with:
           go-version: 1.15
-      - name: Install dependencies
+      # I could manually break apart what the Make command is doing, so each step is surfaced to the workflow
+      # But I would be repeating what the Makefile does in its 'ci' target. So keeping it simple for now.
+      - name: Do the things!
         run: |
           go version
-          go get golang.org/x/lint/golint
-          go get honnef.co/go/tools/cmd/staticcheck
-          go get -d ./...
-      - name: Build and test
-        run: |
-          go build -tags=gofuzz ./...
-          go vet ./...
-          staticcheck ./...
-          golint -set_exit_status ./...
-          go test -v -race ./...
+          make ci
